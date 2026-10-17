@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  pokerclock:
+    build: .
+    container_name: pokerclock
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    volumes:
+      - ./data:/var/www/html/data

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>賽事後台控台 - POKER DOMAIN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0e14;
+            --card: #131822;
+            --card-alt: #1a2130;
+            --border: #2a344a;
+            --gold: #f5c542;
+            --cyan: #2beaff;
+            --green: #2ed573;
+            --red: #ff4757;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Noto Sans TC', -apple-system, sans-serif;
+            line-height: 1.5;
+            padding-bottom: 60px;
+        }
+        .topbar {
+            background: #0f131c;
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            font-size: 1.25rem;
+            color: var(--gold);
+            text-decoration: none;
+        }
+        .topbar-links { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn {
+            appearance: none;
+            border: 1px solid var(--border);
+            background: var(--card-alt);
+            color: var(--text);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+        .btn:hover { border-color: var(--gold); color: var(--gold); }
+        .btn-gold { background: var(--gold); color: #0a0d12; border-color: var(--gold); }
+        .btn-gold:hover { background: #ffd45e; color: #000; }
+        .btn-cyan { background: rgba(43,234,255,0.15); color: var(--cyan); border-color: var(--cyan); }
+        .btn-cyan:hover { background: var(--cyan); color: #000; }
+        .btn-green { background: var(--green); color: #06180e; border-color: var(--green); }
+        .btn-red { background: rgba(255,71,87,0.15); color: var(--red); border-color: var(--red); }
+        .btn-red:hover { background: var(--red); color: #fff; }
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 290px 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 980px) { .container { grid-template-columns: 1fr; } }
+        .sidebar { display: flex; flex-direction: column; gap: 16px; }
+        .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+        .panel-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .tourney-list { display: flex; flex-direction: column; gap: 8px; }
+        .tourney-item {
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card-alt);
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tourney-item.active { border-color: var(--gold); background: rgba(245, 197, 66, 0.1); }
+        .tourney-item-name { font-weight: 700; font-size: 0.95rem; }
+        .tourney-item-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .status-dot.running { background: var(--green); box-shadow: 0 0 8px var(--green); }
+        .status-dot.paused { background: var(--gold); }
+        .main-col { display: flex; flex-direction: column; gap: 20px; }
+        .live-deck {
+            background: linear-gradient(145deg, #161d2b, #111621);
+            border: 2px solid var(--gold);
+            border-radius: 14px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1.1fr 1.2fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+        @media (max-width: 1100px) { .live-deck { grid-template-columns: 1fr; } }
+        .live-clock-box { text-align: center; background: #0a0d14; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .live-clock-digits { font-size: 3.6rem; font-weight: 900; font-variant-numeric: tabular-nums; color: var(--gold); line-height: 1.05; margin: 6px 0; }
+        .live-level-badge { font-size: 1rem; font-weight: 800; color: var(--cyan); }
+        .deck-buttons-grid { display: flex; flex-direction: column; gap: 10px; }
+        .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-row .btn { flex: 1; }
+        .player-quick-box { background: #0e131d; border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+        .pq-stat { display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .pq-stat strong { font-size: 1.05rem; color: var(--gold); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--muted); }
+        input[type="text"], input[type="number"], select, textarea {
+            background: #0b0f17;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+        .table-wrap { overflow-x: auto; }
+        table.levels-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+        table.levels-table th, table.levels-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+        table.levels-table th { color: var(--muted); font-weight: 700; font-size: 0.82rem; background: #0e131d; }
+        table.levels-table tr.current-row { background: rgba(245, 197, 66, 0.14); }
+        table.levels-table tr.break-row { background: rgba(43, 234, 255, 0.08); }
+        table.levels-table input { width: 100%; padding: 6px 8px; }
+        .ann-item {
+            background: var(--card-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 200px 1fr auto;
+            gap: 10px;
+            align-items: start;
+        }
+        @media (max-width: 768px) { .ann-item { grid-template-columns: 1fr; } }
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--green);
+            color: #041b0d;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.25s ease;
+            z-index: 999;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <a href="index.html" class="topbar-brand">♠ POKER DOMAIN 賽事控台與管理系統</a>
+        <div class="topbar-links">
+            <a href="display.html" target="_blank" id="linkSingleView" class="btn btn-gold">📺 開啟單場電視畫面</a>
+            <a href="dual.html" target="_blank" class="btn btn-cyan">🗔 開啟雙場分割畫面</a>
+            <a href="freeclock.html" target="_blank" id="linkFreeClock" class="btn">⏱️ FreePokerClock 簡約版</a>
+            <a href="index.html" class="btn">🏠 返回首頁總覽</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="panel">
+                <div class="panel-title">
+                    <span>🏆 賽事列表</span>
+                    <button type="button" class="btn btn-gold" style="padding:4px 10px; font-size:0.8rem;" id="btnOpenCreate">+ 新增賽事</button>
+                </div>
+                <div class="tourney-list" id="tourneyList"></div>
+            </div>
+
+            <div class="panel" id="createPanel" style="display:none; border-color:var(--gold);">
+                <div class="panel-title">✨ 建立新賽事</div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>賽事名稱</label>
+                    <input type="text" id="newTourneyTitle" value="週末撲克錦標賽">
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>盲注模板</label>
+                    <select id="newTourneyTemplate">
+                        <option value="standard">標準錦標賽 (20分鐘/級 + 休息)</option>
+                        <option value="turbo">快速賽 Turbo (10分鐘/級)</option>
+                        <option value="timed">限時錦標賽 (30分/60分)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label>視覺主題</label>
+                    <select id="newTourneyTheme">
+                        <option value="gold">流金黑 (Gold)</option>
+                        <option value="cyan">電光藍 (Cyan)</option>
+                        <option value="red">經典紅 (Red)</option>
+                        <option value="emerald">撲克綠 (Emerald)</option>
+                    </select>
+                </div>
+                <div class="btn-row">
+                    <button type="button" class="btn btn-gold" id="btnConfirmCreate">建立</button>
+                    <button type="button" class="btn" id="btnCancelCreate">取消</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">🌐 全域顯示與雙場設定</div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>俱樂部 / 品牌名稱</label>
+                    <input type="text" id="setBrandName" value="POKER DOMAIN">
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>雙場畫面 - 左側賽事</label>
+                    <select id="setDualLeft"></select>
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>雙場畫面 - 右側賽事</label>
+                    <select id="setDualRight"></select>
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label>公告輪播間隔 (秒)</label>
+                    <input type="number" id="setAnnInterval" min="3" max="120" value="8">
+                </div>
+                <div class="form-group" style="margin-bottom:10px; flex-direction:row; align-items:center; justify-content:space-between;">
+                    <label style="color:#fff;">🔥 電視背景火焰粒子特效</label>
+                    <input type="checkbox" id="setFireEffect" checked style="width:18px; height:18px;">
+                </div>
+                <div class="form-group" style="margin-bottom:14px; flex-direction:row; align-items:center; justify-content:space-between;">
+                    <label style="color:#fff;">🗣️ 升盲中文語音播報 (TTS)</label>
+                    <input type="checkbox" id="setVoiceEnabled" style="width:18px; height:18px;">
+                </div>
+                <button type="button" class="btn btn-gold" style="width:100%; margin-bottom:8px;" id="btnSaveGlobal">💾 儲存全域設定</button>
+                <button type="button" class="btn btn-red" style="width:100%; font-size:0.8rem;" id="btnResetDemo">🔄 重置為預設範例資料</button>
+            </div>
+        </aside>
+
+        <main class="main-col">
+            <section class="live-deck">
+                <div class="live-clock-box">
+                    <div class="live-level-badge" id="rcLevelBadge">Level 1</div>
+                    <div class="live-clock-digits" id="rcTimer">00:00</div>
+                    <div style="font-size:0.9rem; color:var(--muted);" id="rcBlindsInfo">小盲 0 / 大盲 0 (前注 0)</div>
+                </div>
+
+                <div class="deck-buttons-grid">
+                    <div class="btn-row">
+                        <button type="button" class="btn" id="rcPrevLvl">⏮ 上一級</button>
+                        <button type="button" class="btn btn-gold" id="rcPlayPause" style="font-size:1.05rem;">▶ 開始計時</button>
+                        <button type="button" class="btn" id="rcNextLvl">⏭ 下一級</button>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn" data-adj="-60">-1 分鐘</button>
+                        <button type="button" class="btn" data-adj="-10">-10 秒</button>
+                        <button type="button" class="btn" data-adj="10">+10 秒</button>
+                        <button type="button" class="btn" data-adj="60">+1 分鐘</button>
+                        <button type="button" class="btn" id="rcResetTime">↺ 重設本級</button>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn" id="rcToggleSound">🔊 音效: 開</button>
+                        <button type="button" class="btn btn-red" id="rcDeleteTourney">🗑️ 刪除此賽事</button>
+                    </div>
+                </div>
+
+                <div class="player-quick-box">
+                    <div class="pq-stat"><span>當前 / 參賽人數:</span><strong id="rcPlayersText">18 / 20</strong></div>
+                    <div class="pq-stat"><span>平均計分牌:</span><strong id="rcAvgStackText">555,556 (138.9bb)</strong></div>
+                    <div class="pq-stat"><span>獎池價值:</span><strong id="rcPrizeText">60,000</strong></div>
+                    <div class="btn-row" style="margin-top:4px;">
+                        <button type="button" class="btn btn-green" id="rcBtnBuyin">+1 新參賽</button>
+                        <button type="button" class="btn btn-red" id="rcBtnBust">-1 玩家淘汰</button>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" class="btn" id="rcBtnRevive">+1 復活/更正</button>
+                        <button type="button" class="btn" id="rcBtnRebuy">+1 Rebuy</button>
+                        <button type="button" class="btn" id="rcBtnAddon">+1 Add-on</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <span>📝 賽事基本資訊與獎池計分牌設定</span>
+                    <button type="button" class="btn btn-gold" id="btnSaveTourneyTop">💾 儲存賽事設定</button>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group"><label>賽事主標題 (Title)</label><input type="text" id="f_title"></div>
+                    <div class="form-group"><label>副標題 (Subtitle)</label><input type="text" id="f_subtitle"></div>
+                    <div class="form-group">
+                        <label>電視面板主題配色</label>
+                        <select id="f_theme">
+                            <option value="gold">流金黑 (Gold - 圖1風格)</option>
+                            <option value="cyan">電光藍 (Cyan - 圖2風格)</option>
+                            <option value="red">經典紅 (Red - FreePokerClock)</option>
+                            <option value="emerald">皇家綠 (Emerald Green)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>右上角倒數框顯示模式</label>
+                        <select id="f_right_top_mode">
+                            <option value="auto">自動 (有休息顯示距離休息，否則距離結束)</option>
+                            <option value="end">固定顯示「距離賽事結束」(如圖1)</option>
+                            <option value="break">固定顯示「距離休息」(如圖2)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>當前場上人數 (Current Players)</label><input type="number" id="f_current_players" min="0"></div>
+                    <div class="form-group"><label>總參賽買入數 (Total Entries)</label><input type="number" id="f_total_entries" min="0"></div>
+                    <div class="form-group"><label>起始計分牌 (Starting Chips)</label><input type="number" id="f_starting_chips" min="0" step="100"></div>
+                    <div class="form-group"><label>指定總計分牌 (0 = 自動依買入計算)</label><input type="number" id="f_manual_total_chips" min="0" step="1000"></div>
+                    <div class="form-group"><label>每組買入進入獎池金額</label><input type="number" id="f_buyin_prize" min="0" step="100"></div>
+                    <div class="form-group"><label>手動指定總獎池 (0 = 自動計算)</label><input type="number" id="f_manual_prize_pool" min="0" step="100"></div>
+                    <div class="form-group">
+                        <label>Rebuy 次數 / 每次籌碼</label>
+                        <div style="display:flex; gap:6px;">
+                            <input type="number" id="f_rebuy_count" min="0" style="width:40%;">
+                            <input type="number" id="f_rebuy_chips" min="0" step="1000" style="width:60%;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Add-on 次數 / 每次籌碼</label>
+                        <div style="display:flex; gap:6px;">
+                            <input type="number" id="f_addon_count" min="0" style="width:40%;">
+                            <input type="number" id="f_addon_chips" min="0" step="1000" style="width:60%;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <span>📢 賽事公告輪播與底部跑馬燈設定 (左側欄位)</span>
+                    <button type="button" class="btn btn-cyan" id="btnAddAnn">+ 新增一頁公告</button>
+                </div>
+                <div id="annListContainer"></div>
+                <div class="form-group" style="margin-top:12px;">
+                    <label>左側公告欄底部固定提示文字 (例如圖2：「折扣額由領域補貼獎池」，留空則隱藏)</label>
+                    <input type="text" id="f_footer_notice" placeholder="例如：折扣額由領域補貼獎池">
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <span>⏱️ 盲注結構表 (Blind Structure)</span>
+                    <div class="btn-row">
+                        <button type="button" class="btn" id="btnAutoGen">⚡ 快速產生結構</button>
+                        <button type="button" class="btn btn-cyan" id="btnAddBreak">+ 插入休息 (Break)</button>
+                        <button type="button" class="btn btn-gold" id="btnAddLevel">+ 新增盲注級別</button>
+                        <button type="button" class="btn btn-green" id="btnSaveTourneyBottom">💾 儲存所有變更</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="levels-table">
+                        <thead>
+                            <tr>
+                                <th style="width:70px;">狀態</th>
+                                <th style="width:110px;">類型</th>
+                                <th style="width:90px;">級別名稱</th>
+                                <th>小盲 (SB)</th>
+                                <th>大盲 (BB)</th>
+                                <th>前注 (BB Ante)</th>
+                                <th style="width:120px;">時間 (分鐘)</th>
+                                <th style="width:150px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="levelsTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toastMsg">✅ 已成功儲存變更並同步至電視畫面！</div>
+
+    <script src="assets/js/local-backend.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let state = window.PokerLocalStore ? window.PokerLocalStore.getState() : {};
+        let selectedId = urlParams.get('id') || 'tourney_1';
+        let formLevels = [];
+        let formAnns = [];
+        let isEditingDirty = false;
+
+        function showToast(msg = '✅ 已成功儲存變更並同步至電視畫面！') {
+            const t = document.getElementById('toastMsg');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        function fmtNum(n) { return (Number(n) || 0).toLocaleString('en-US'); }
+        function fmtClock(sec) {
+            const s = Math.max(0, Math.floor(Number(sec) || 0));
+            const m = Math.floor(s / 60);
+            const r = s % 60;
+            return (m < 10 ? '0' + m : m) + ':' + (r < 10 ? '0' + r : r);
+        }
+
+        async function apiCall(payload, toastText = null) {
+            const res = await fetch('api.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const json = await res.json();
+            if (json && json.ok) {
+                state = json.data;
+                if (!state.tournaments[selectedId]) {
+                    selectedId = Object.keys(state.tournaments)[0];
+                }
+                if (toastText) {
+                    isEditingDirty = false;
+                    loadTournamentIntoForm();
+                    showToast(toastText);
+                } else {
+                    renderLiveStatusOnly();
+                }
+            }
+        }
+
+        function renderSidebarAndSelects() {
+            const listEl = document.getElementById('tourneyList');
+            const selLeft = document.getElementById('setDualLeft');
+            const selRight = document.getElementById('setDualRight');
+            listEl.innerHTML = '';
+            selLeft.innerHTML = '';
+            selRight.innerHTML = '';
+
+            const settings = state.settings || {};
+
+            Object.values(state.tournaments || {}).forEach(t => {
+                const item = document.createElement('div');
+                item.className = 'tourney-item' + (t.id === selectedId ? ' active' : '');
+                const cur = (t.computed && t.computed.current_level) || {};
+                const lvlText = cur.type === 'break' ? '休息中' : ('Level ' + (cur.level || 1));
+                item.innerHTML = `
+                    <div>
+                        <div class="tourney-item-name">${t.title}</div>
+                        <div class="tourney-item-meta">${lvlText} • ${fmtClock(t.remaining_seconds)} • ${t.current_players}/${t.total_entries}人</div>
+                    </div>
+                    <span class="status-dot ${t.status === 'running' ? 'running' : 'paused'}"></span>
+                `;
+                item.onclick = () => {
+                    selectedId = t.id;
+                    isEditingDirty = false;
+                    history.replaceState(null, '', 'admin.html?id=' + encodeURIComponent(selectedId));
+                    loadTournamentIntoForm();
+                    renderSidebarAndSelects();
+                };
+                listEl.appendChild(item);
+
+                selLeft.add(new Option(t.title, t.id, false, settings.dual_left_id === t.id));
+                selRight.add(new Option(t.title, t.id, false, settings.dual_right_id === t.id));
+            });
+
+            document.getElementById('linkSingleView').href = 'display.html?id=' + encodeURIComponent(selectedId);
+            document.getElementById('linkFreeClock').href = 'freeclock.html?id=' + encodeURIComponent(selectedId);
+        }
+
+        function renderLiveStatusOnly() {
+            renderSidebarAndSelects();
+            const t = state.tournaments && state.tournaments[selectedId];
+            if (!t) return;
+            const c = t.computed || {};
+            const cur = c.current_level || {};
+
+            document.getElementById('rcLevelBadge').textContent = cur.type === 'break' ? '休息時間 (Break)' : `Level ${cur.level} (${t.status === 'running' ? '進行中' : '暫停中'})`;
+            document.getElementById('rcTimer').textContent = fmtClock(t.remaining_seconds);
+            document.getElementById('rcBlindsInfo').textContent = cur.type === 'break'
+                ? '中場休息時間'
+                : `小盲 ${fmtNum(cur.sb)} / 大盲 ${fmtNum(cur.bb)} (前注 ${fmtNum(cur.ante)})`;
+
+            document.getElementById('rcPlayPause').textContent = t.status === 'running' ? '⏸ 暫停計時' : '▶ 開始計時';
+            document.getElementById('rcToggleSound').textContent = t.sound_enabled ? '🔊 音效: 開' : '🔇 音效: 關';
+            document.getElementById('rcPlayersText').textContent = `${t.current_players} / ${t.total_entries}`;
+            document.getElementById('rcAvgStackText').textContent = `${fmtNum(c.avg_chips)} (${c.avg_bb}bb)`;
+            document.getElementById('rcPrizeText').textContent = fmtNum(c.prize_pool);
+
+            if (!isEditingDirty) {
+                document.getElementById('f_current_players').value = t.current_players;
+                document.getElementById('f_total_entries').value = t.total_entries;
+                document.getElementById('f_rebuy_count').value = t.rebuy_count || 0;
+                document.getElementById('f_addon_count').value = t.addon_count || 0;
+            }
+
+            const rows = document.querySelectorAll('#levelsTableBody tr');
+            rows.forEach((r, idx) => r.classList.toggle('current-row', idx === t.current_level_index));
+        }
+
+        function loadTournamentIntoForm() {
+            const t = state.tournaments && state.tournaments[selectedId];
+            if (!t) return;
+
+            const s = state.settings || {};
+            document.getElementById('setBrandName').value = s.brand_name || 'POKER DOMAIN';
+            document.getElementById('setAnnInterval').value = s.announcement_interval || 8;
+            document.getElementById('setFireEffect').checked = s.fire_effect !== false;
+            document.getElementById('setVoiceEnabled').checked = !!s.voice_enabled;
+
+            document.getElementById('f_title').value = t.title || '';
+            document.getElementById('f_subtitle').value = t.subtitle || '';
+            document.getElementById('f_theme').value = t.theme || 'gold';
+            document.getElementById('f_right_top_mode').value = t.right_top_mode || 'auto';
+            document.getElementById('f_current_players').value = t.current_players ?? 0;
+            document.getElementById('f_total_entries').value = t.total_entries ?? 0;
+            document.getElementById('f_starting_chips').value = t.starting_chips ?? 30000;
+            document.getElementById('f_manual_total_chips').value = t.manual_total_chips ?? 0;
+            document.getElementById('f_buyin_prize').value = t.buyin_prize ?? 1000;
+            document.getElementById('f_manual_prize_pool').value = t.manual_prize_pool ?? 0;
+            document.getElementById('f_rebuy_count').value = t.rebuy_count ?? 0;
+            document.getElementById('f_rebuy_chips').value = t.rebuy_chips ?? 30000;
+            document.getElementById('f_addon_count').value = t.addon_count ?? 0;
+            document.getElementById('f_addon_chips').value = t.addon_chips ?? 30000;
+            document.getElementById('f_footer_notice').value = t.footer_notice || '';
+
+            formAnns = JSON.parse(JSON.stringify(t.announcements || []));
+            formLevels = JSON.parse(JSON.stringify(t.levels || []));
+
+            renderAnnouncementsEditor();
+            renderLevelsEditor();
+            renderLiveStatusOnly();
+        }
+
+        function renderAnnouncementsEditor() {
+            const container = document.getElementById('annListContainer');
+            container.innerHTML = '';
+            formAnns.forEach((ann, idx) => {
+                const div = document.createElement('div');
+                div.className = 'ann-item';
+                div.innerHTML = `
+                    <div class="form-group">
+                        <label>公告標題 (第 ${idx + 1} 頁)</label>
+                        <input type="text" value="${(ann.title || '').replace(/"/g, '&quot;')}" data-ann-title="${idx}">
+                    </div>
+                    <div class="form-group">
+                        <label>公告內容 (支援多行換行)</label>
+                        <textarea rows="2" data-ann-content="${idx}">${ann.content || ''}</textarea>
+                    </div>
+                    <div style="padding-top:22px;">
+                        <button type="button" class="btn btn-red" data-ann-del="${idx}">刪除</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            container.querySelectorAll('[data-ann-title]').forEach(el => {
+                el.oninput = (e) => { isEditingDirty = true; formAnns[e.target.dataset.annTitle].title = e.target.value; };
+            });
+            container.querySelectorAll('[data-ann-content]').forEach(el => {
+                el.oninput = (e) => { isEditingDirty = true; formAnns[e.target.dataset.annContent].content = e.target.value; };
+            });
+            container.querySelectorAll('[data-ann-del]').forEach(el => {
+                el.onclick = (e) => {
+                    isEditingDirty = true;
+                    formAnns.splice(Number(e.target.dataset.annDel), 1);
+                    renderAnnouncementsEditor();
+                };
+            });
+        }
+
+        function renderLevelsEditor() {
+            const tbody = document.getElementById('levelsTableBody');
+            tbody.innerHTML = '';
+            const t = state.tournaments && state.tournaments[selectedId];
+            let lvlCounter = 1;
+
+            formLevels.forEach((lvl, idx) => {
+                const isBreak = lvl.type === 'break';
+                const displayLvl = isBreak ? '休息' : ('Level ' + (lvlCounter++));
+                const tr = document.createElement('tr');
+                if (idx === (t && t.current_level_index)) tr.classList.add('current-row');
+                if (isBreak) tr.classList.add('break-row');
+                const mins = Math.round((Number(lvl.duration) || 900) / 60);
+
+                tr.innerHTML = `
+                    <td>
+                        <button type="button" class="btn" style="padding:4px 8px; font-size:0.78rem;" data-jump="${idx}">
+                            ${idx === (t && t.current_level_index) ? '▶ 當前' : '跳至此級'}
+                        </button>
+                    </td>
+                    <td>
+                        <select data-lvl-type="${idx}">
+                            <option value="level" ${!isBreak ? 'selected' : ''}>一般盲注</option>
+                            <option value="break" ${isBreak ? 'selected' : ''}>中場休息</option>
+                        </select>
+                    </td>
+                    <td style="font-weight:700;">${displayLvl}</td>
+                    <td><input type="number" value="${isBreak ? 0 : lvl.sb}" ${isBreak ? 'disabled' : ''} data-lvl-sb="${idx}"></td>
+                    <td><input type="number" value="${isBreak ? 0 : lvl.bb}" ${isBreak ? 'disabled' : ''} data-lvl-bb="${idx}"></td>
+                    <td><input type="number" value="${isBreak ? 0 : lvl.ante}" ${isBreak ? 'disabled' : ''} data-lvl-ante="${idx}"></td>
+                    <td><input type="number" value="${mins}" min="1" data-lvl-mins="${idx}"></td>
+                    <td><button type="button" class="btn btn-red" style="padding:4px 10px; font-size:0.8rem;" data-lvl-del="${idx}">刪除</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            tbody.querySelectorAll('[data-jump]').forEach(btn => {
+                btn.onclick = (e) => apiCall({ action: 'change_level', tournament_id: selectedId, level_index: Number(e.currentTarget.dataset.jump) });
+            });
+            tbody.querySelectorAll('[data-lvl-type]').forEach(sel => {
+                sel.onchange = (e) => { isEditingDirty = true; formLevels[Number(e.target.dataset.lvlType)].type = e.target.value; renderLevelsEditor(); };
+            });
+            tbody.querySelectorAll('[data-lvl-sb]').forEach(inp => {
+                inp.oninput = (e) => { isEditingDirty = true; formLevels[e.target.dataset.lvlSb].sb = Number(e.target.value); };
+            });
+            tbody.querySelectorAll('[data-lvl-bb]').forEach(inp => {
+                inp.oninput = (e) => { isEditingDirty = true; formLevels[e.target.dataset.lvlBb].bb = Number(e.target.value); };
+            });
+            tbody.querySelectorAll('[data-lvl-ante]').forEach(inp => {
+                inp.oninput = (e) => { isEditingDirty = true; formLevels[e.target.dataset.lvlAnte].ante = Number(e.target.value); };
+            });
+            tbody.querySelectorAll('[data-lvl-mins]').forEach(inp => {
+                inp.oninput = (e) => { isEditingDirty = true; formLevels[e.target.dataset.lvlMins].duration = Math.max(1, Number(e.target.value)) * 60; };
+            });
+            tbody.querySelectorAll('[data-lvl-del]').forEach(btn => {
+                btn.onclick = (e) => {
+                    if (formLevels.length <= 1) return alert('至少需要保留一個盲注級別');
+                    isEditingDirty = true;
+                    formLevels.splice(Number(e.currentTarget.dataset.lvlDel), 1);
+                    renderLevelsEditor();
+                };
+            });
+        }
+
+        function saveCurrentTournament() {
+            apiCall({
+                action: 'save_tournament',
+                tournament_id: selectedId,
+                tournament: {
+                    title: document.getElementById('f_title').value,
+                    subtitle: document.getElementById('f_subtitle').value,
+                    theme: document.getElementById('f_theme').value,
+                    right_top_mode: document.getElementById('f_right_top_mode').value,
+                    current_players: Number(document.getElementById('f_current_players').value),
+                    total_entries: Number(document.getElementById('f_total_entries').value),
+                    starting_chips: Number(document.getElementById('f_starting_chips').value),
+                    manual_total_chips: Number(document.getElementById('f_manual_total_chips').value),
+                    buyin_prize: Number(document.getElementById('f_buyin_prize').value),
+                    manual_prize_pool: Number(document.getElementById('f_manual_prize_pool').value),
+                    rebuy_count: Number(document.getElementById('f_rebuy_count').value),
+                    rebuy_chips: Number(document.getElementById('f_rebuy_chips').value),
+                    addon_count: Number(document.getElementById('f_addon_count').value),
+                    addon_chips: Number(document.getElementById('f_addon_chips').value),
+                    footer_notice: document.getElementById('f_footer_notice').value,
+                    announcements: formAnns,
+                    levels: formLevels
+                }
+            }, '✅ 賽事設定與盲注結構已儲存！');
+        }
+
+        document.getElementById('btnSaveTourneyTop').onclick = saveCurrentTournament;
+        document.getElementById('btnSaveTourneyBottom').onclick = saveCurrentTournament;
+
+        document.getElementById('btnAddAnn').onclick = () => {
+            isEditingDirty = true;
+            formAnns.push({ title: '賽事公告', content: '請輸入公告內容' });
+            renderAnnouncementsEditor();
+        };
+
+        document.getElementById('btnAddLevel').onclick = () => {
+            isEditingDirty = true;
+            const lastLvl = [...formLevels].reverse().find(l => l.type !== 'break') || { sb: 1000, bb: 2000, ante: 2000, duration: 1200 };
+            formLevels.push({
+                type: 'level',
+                level: formLevels.length + 1,
+                sb: lastLvl.sb * 2,
+                bb: lastLvl.bb * 2,
+                ante: lastLvl.ante > 0 ? lastLvl.bb * 2 : 0,
+                duration: lastLvl.duration
+            });
+            renderLevelsEditor();
+        };
+
+        document.getElementById('btnAddBreak').onclick = () => {
+            isEditingDirty = true;
+            formLevels.push({ type: 'break', level: '休息', sb: 0, bb: 0, ante: 0, duration: 600 });
+            renderLevelsEditor();
+        };
+
+        document.getElementById('btnAutoGen').onclick = () => {
+            const mins = Number(prompt('請輸入每級盲注時間 (分鐘)：', '15'));
+            if (!mins || mins <= 0) return;
+            const dur = mins * 60;
+            const std = [
+                [100,200,200],[200,400,400],[300,600,600],[400,800,800],['break',600],
+                [500,1000,1000],[600,1200,1200],[800,1600,1600],[1000,2000,2000],['break',600],
+                [1500,3000,3000],[2000,4000,4000],[3000,6000,6000],[4000,8000,8000],
+                [5000,10000,10000],[8000,16000,16000],[10000,20000,20000]
+            ];
+            formLevels = std.map((item, i) => item[0] === 'break'
+                ? { type: 'break', level: '休息', sb: 0, bb: 0, ante: 0, duration: item[1] }
+                : { type: 'level', level: i + 1, sb: item[0], bb: item[1], ante: item[2], duration: dur }
+            );
+            isEditingDirty = true;
+            renderLevelsEditor();
+        };
+
+        document.getElementById('rcPlayPause').onclick = () => apiCall({ action: 'toggle_play', tournament_id: selectedId });
+        document.getElementById('rcPrevLvl').onclick = () => apiCall({ action: 'change_level', tournament_id: selectedId, delta: -1 });
+        document.getElementById('rcNextLvl').onclick = () => apiCall({ action: 'change_level', tournament_id: selectedId, delta: 1 });
+        document.getElementById('rcResetTime').onclick = () => apiCall({ action: 'adjust_time', tournament_id: selectedId, reset: true });
+        document.getElementById('rcToggleSound').onclick = () => apiCall({ action: 'toggle_sound', tournament_id: selectedId });
+
+        document.querySelectorAll('[data-adj]').forEach(btn => {
+            btn.onclick = (e) => apiCall({ action: 'adjust_time', tournament_id: selectedId, delta: Number(e.currentTarget.dataset.adj) });
+        });
+
+        document.getElementById('rcBtnBuyin').onclick = () => apiCall({ action: 'adjust_players', tournament_id: selectedId, sub_action: 'buyin' });
+        document.getElementById('rcBtnBust').onclick = () => apiCall({ action: 'adjust_players', tournament_id: selectedId, sub_action: 'bust' });
+        document.getElementById('rcBtnRevive').onclick = () => apiCall({ action: 'adjust_players', tournament_id: selectedId, sub_action: 'revive' });
+        document.getElementById('rcBtnRebuy').onclick = () => apiCall({ action: 'adjust_players', tournament_id: selectedId, sub_action: 'rebuy', delta: 1 });
+        document.getElementById('rcBtnAddon').onclick = () => apiCall({ action: 'adjust_players', tournament_id: selectedId, sub_action: 'addon', delta: 1 });
+
+        document.getElementById('rcDeleteTourney').onclick = () => {
+            if (Object.keys(state.tournaments).length <= 1) return alert('至少需保留一場賽事！');
+            if (confirm('確定要刪除此賽事嗎？')) {
+                apiCall({ action: 'delete_tournament', tournament_id: selectedId }, '🗑️ 賽事已刪除');
+            }
+        };
+
+        document.getElementById('btnOpenCreate').onclick = () => { document.getElementById('createPanel').style.display = 'block'; };
+        document.getElementById('btnCancelCreate').onclick = () => { document.getElementById('createPanel').style.display = 'none'; };
+        document.getElementById('btnConfirmCreate').onclick = async () => {
+            const title = document.getElementById('newTourneyTitle').value || '新錦標賽';
+            const template = document.getElementById('newTourneyTemplate').value;
+            const theme = document.getElementById('newTourneyTheme').value;
+            document.getElementById('createPanel').style.display = 'none';
+            await apiCall({ action: 'create_tournament', title, template, theme }, '✨ 新賽事已建立！');
+            const keys = Object.keys(state.tournaments);
+            selectedId = keys[keys.length - 1];
+            loadTournamentIntoForm();
+        };
+
+        document.getElementById('btnSaveGlobal').onclick = () => {
+            apiCall({
+                action: 'save_settings',
+                settings: {
+                    brand_name: document.getElementById('setBrandName').value,
+                    dual_left_id: document.getElementById('setDualLeft').value,
+                    dual_right_id: document.getElementById('setDualRight').value,
+                    announcement_interval: Number(document.getElementById('setAnnInterval').value),
+                    fire_effect: document.getElementById('setFireEffect').checked,
+                    voice_enabled: document.getElementById('setVoiceEnabled').checked
+                }
+            }, '🌐 全域設定已更新！');
+        };
+
+        document.getElementById('btnResetDemo').onclick = () => {
+            if (confirm('確定要重置所有賽事為預設的兩場範例賽事嗎？')) {
+                apiCall({ action: 'reset_demo' }, '🔄 已恢復預設範例資料！');
+            }
+        };
+
+        setInterval(() => {
+            Object.values(state.tournaments || {}).forEach(t => {
+                if (t.status === 'running' && t.remaining_seconds > 0) {
+                    t.remaining_seconds--;
+                }
+            });
+            renderLiveStatusOnly();
+        }, 1000);
+
+        setInterval(async () => {
+            try {
+                const res = await fetch('api.php?action=state&_t=' + Date.now(), { cache: 'no-store' });
+                const json = await res.json();
+                if (json && json.ok) {
+                    state = json.data;
+                    renderLiveStatusOnly();
+                }
+            } catch (e) {}
+        }, 2500);
+
+        // Fetch initial state then load form
+        fetch('api.php?action=state&_t=' + Date.now()).then(r => r.json()).then(json => {
+            if (json && json.ok) {
+                state = json.data;
+                if (!state.tournaments[selectedId]) selectedId = Object.keys(state.tournaments)[0];
+                loadTournamentIntoForm();
+            }
+        });
+    </script>
+</body>
+</html>
