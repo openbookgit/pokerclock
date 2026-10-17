@@ -9,7 +9,7 @@ $settings = $state['settings'] ?? [];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($settings['brand_name'] ?? 'POKER DOMAIN') ?> - 德州撲克賽事計時系統</title>
+    <title><?= htmlspecialchars($settings['brand_name'] ?? 'POKER CLOCK') ?> - 德州撲克賽事計時系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Noto+Sans+TC:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -213,7 +213,7 @@ $settings = $state['settings'] ?? [];
         <div class="hero">
             <div class="brand">
                 <?= htmlspecialchars($settings['brand_logo_icon'] ?? '♠') ?>
-                <?= htmlspecialchars($settings['brand_name'] ?? 'POKER DOMAIN') ?>
+                <?= htmlspecialchars($settings['brand_name'] ?? 'POKER CLOCK') ?>
             </div>
             <p>專業德州撲克賽事計時器系統 • 支援單場豪華電視看板 / 雙場分割畫面 / FreePokerClock 簡約模式 / 遠端同步控台</p>
             <div class="quick-launch">
@@ -279,7 +279,7 @@ $settings = $state['settings'] ?? [];
         <div class="features-box">
             <div>
                 <h3>📺 單場與雙場電視看板</h3>
-                <p>完整還原 POKER DOMAIN 流金黑與電光藍霓虹視覺，支援單場三欄式看板（含自動輪播公告、平均BB、距離休息/賽事結束）以及雙場同螢幕分割顯示。</p>
+                <p>完整還原 POKER CLOCK 流金黑與電光藍霓虹視覺，支援單場三欄式看板（含自動輪播公告、平均BB、距離休息/賽事結束）以及雙場同螢幕分割顯示。</p>
             </div>
             <div>
                 <h3>⌨️ 快捷鍵與懸浮控制列</h3>

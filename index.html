@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POKER DOMAIN - 德州撲克賽事計時系統</title>
+    <title>POKER CLOCK - 德州撲克賽事計時系統</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800&family=Noto+Sans+TC:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -149,7 +149,7 @@
 <body>
     <div class="wrap">
         <div class="hero">
-            <div class="brand" id="heroBrand">♠ POKER DOMAIN</div>
+            <div class="brand" id="heroBrand">♠ POKER CLOCK</div>
             <p>專業德州撲克賽事計時器系統 • 支援單場豪華電視看板 / 雙場分割畫面 / FreePokerClock 簡約模式 / 遠端同步控台</p>
             <div class="quick-launch">
                 <a href="dual.html" class="btn btn-cyan">🗔 開啟雙場分割畫面 (圖3模式)</a>
@@ -167,7 +167,7 @@
         <div class="features-box">
             <div>
                 <h3>📺 單場與雙場電視看板</h3>
-                <p>完整還原 POKER DOMAIN 流金黑與電光藍霓虹視覺，支援單場三欄式看板（含自動輪播公告、平均BB、距離休息/賽事結束）以及雙場同螢幕分割顯示。</p>
+                <p>完整還原 POKER CLOCK 流金黑與電光藍霓虹視覺，支援單場三欄式看板（含自動輪播公告、平均BB、距離休息/賽事結束）以及雙場同螢幕分割顯示。</p>
             </div>
             <div>
                 <h3>⌨️ 快捷鍵與懸浮控制列</h3>
@@ -200,7 +200,7 @@
             if (!json || !json.ok) return;
             const state = json.data;
             const s = state.settings || {};
-            document.getElementById('heroBrand').textContent = `${s.brand_logo_icon || '♠'} ${s.brand_name || 'POKER DOMAIN'}`;
+            document.getElementById('heroBrand').textContent = `${s.brand_logo_icon || '♠'} ${s.brand_name || 'POKER CLOCK'}`;
 
             const grid = document.getElementById('tourneyGrid');
             grid.innerHTML = '';

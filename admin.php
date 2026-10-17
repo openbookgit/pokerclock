@@ -14,7 +14,7 @@ $settings = $state['settings'] ?? [];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>賽事後台控台 - <?= htmlspecialchars($settings['brand_name'] ?? 'POKER DOMAIN') ?></title>
+    <title>賽事後台控台 - <?= htmlspecialchars($settings['brand_name'] ?? 'POKER CLOCK') ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -331,7 +331,7 @@ $settings = $state['settings'] ?? [];
 <body>
     <header class="topbar">
         <a href="index.php" class="topbar-brand">
-            ♠ POKER DOMAIN 賽事控台與管理系統
+            ♠ POKER CLOCK 賽事控台與管理系統
         </a>
         <div class="topbar-links">
             <a href="display.php?id=<?= urlencode($selectedId) ?>" target="_blank" id="linkSingleView" class="btn btn-gold">📺 開啟單場電視畫面</a>
@@ -387,7 +387,7 @@ $settings = $state['settings'] ?? [];
                 <div class="panel-title">🌐 全域顯示與雙場設定</div>
                 <div class="form-group" style="margin-bottom:10px;">
                     <label>俱樂部 / 品牌名稱</label>
-                    <input type="text" id="setBrandName" value="<?= htmlspecialchars($settings['brand_name'] ?? 'POKER DOMAIN') ?>">
+                    <input type="text" id="setBrandName" value="<?= htmlspecialchars($settings['brand_name'] ?? 'POKER CLOCK') ?>">
                 </div>
                 <div class="form-group" style="margin-bottom:10px;">
                     <label>雙場畫面 - 左側賽事</label>

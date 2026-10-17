@@ -16,7 +16,7 @@ $themeClass = 'theme-' . htmlspecialchars($tourney['theme'] ?? 'gold');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($tourney['title']) ?> - <?= htmlspecialchars($settings['brand_name'] ?? 'POKER DOMAIN') ?></title>
+    <title><?= htmlspecialchars($tourney['title']) ?> - <?= htmlspecialchars($settings['brand_name'] ?? 'POKER CLOCK') ?></title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="tv-body <?= $themeClass ?>" id="tvBody">
@@ -31,7 +31,7 @@ $themeClass = 'theme-' . htmlspecialchars($tourney['theme'] ?? 'gold');
         <header class="tv-header">
             <a href="index.php" class="brand-logo" title="返回賽事主控台">
                 <span class="spade-icon" id="brandIcon"><?= htmlspecialchars($settings['brand_logo_icon'] ?? '♠') ?></span>
-                <span id="brandName"><?= htmlspecialchars($settings['brand_name'] ?? 'POKER DOMAIN') ?></span>
+                <span id="brandName"><?= htmlspecialchars($settings['brand_name'] ?? 'POKER CLOCK') ?></span>
             </a>
 
             <div class="header-titles">

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>賽事後台控台 - POKER DOMAIN</title>
+    <title>賽事後台控台 - POKER CLOCK</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -187,7 +187,7 @@
 </head>
 <body>
     <header class="topbar">
-        <a href="index.html" class="topbar-brand">♠ POKER DOMAIN 賽事控台與管理系統</a>
+        <a href="index.html" class="topbar-brand">♠ POKER CLOCK 賽事控台與管理系統</a>
         <div class="topbar-links">
             <a href="display.html" target="_blank" id="linkSingleView" class="btn btn-gold">📺 開啟單場電視畫面</a>
             <a href="dual.html" target="_blank" class="btn btn-cyan">🗔 開啟雙場分割畫面</a>
@@ -239,7 +239,7 @@
                 <div class="panel-title">🌐 全域顯示與雙場設定</div>
                 <div class="form-group" style="margin-bottom:10px;">
                     <label>俱樂部 / 品牌名稱</label>
-                    <input type="text" id="setBrandName" value="POKER DOMAIN">
+                    <input type="text" id="setBrandName" value="POKER CLOCK">
                 </div>
                 <div class="form-group" style="margin-bottom:10px;">
                     <label>雙場畫面 - 左側賽事</label>
@@ -523,7 +523,7 @@
             if (!t) return;
 
             const s = state.settings || {};
-            document.getElementById('setBrandName').value = s.brand_name || 'POKER DOMAIN';
+            document.getElementById('setBrandName').value = s.brand_name || 'POKER CLOCK';
             document.getElementById('setAnnInterval').value = s.announcement_interval || 8;
             document.getElementById('setFireEffect').checked = s.fire_effect !== false;
             document.getElementById('setVoiceEnabled').checked = !!s.voice_enabled;

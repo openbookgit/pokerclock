@@ -166,9 +166,9 @@
         const brandIcon = document.getElementById('brandIcon');
         const brandName = document.getElementById('brandName');
         if (brandIcon) brandIcon.textContent = settings.brand_logo_icon || '♠';
-        if (brandName) brandName.textContent = settings.brand_name || 'POKER DOMAIN';
+        if (brandName) brandName.textContent = settings.brand_name || 'POKER CLOCK';
 
-        document.title = `${t.title} - ${settings.brand_name || 'POKER DOMAIN'}`;
+        document.title = `${t.title} - ${settings.brand_name || 'POKER CLOCK'}`;
         document.getElementById('tourneyTitle').textContent = t.title || '';
         document.getElementById('tourneySubtitle').textContent = t.subtitle || '';
 
@@ -343,7 +343,7 @@
         const brandIcon = document.getElementById('brandIcon');
         const brandName = document.getElementById('brandName');
         if (brandIcon) brandIcon.textContent = settings.brand_logo_icon || '♠';
-        if (brandName) brandName.textContent = settings.brand_name || 'POKER DOMAIN';
+        if (brandName) brandName.textContent = settings.brand_name || 'POKER CLOCK';
 
         const dualMuted = settings.dual_muted !== false;
         const dualSoundStatus = document.getElementById('dualSoundStatus');

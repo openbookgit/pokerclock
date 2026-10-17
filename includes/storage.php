@@ -53,12 +53,12 @@ function get_state_file_path() {
 }
 
 /**
- * Default seed data matching the reference Poker Domain screenshots + standard structure
+ * Default seed data matching the reference Poker Clock screenshots + standard structure
  */
 function get_default_state() {
     return [
         'settings' => [
-            'brand_name' => 'POKER DOMAIN',
+            'brand_name' => 'POKER CLOCK',
             'brand_logo_icon' => '♠',
             'fire_effect' => true,
             'dual_left_id' => 'tourney_1',
@@ -248,6 +248,11 @@ function load_state() {
 
     $dirty = false;
     $now = time();
+
+    if (($state['settings']['brand_name'] ?? '') === 'POKER DOMAIN') {
+        $state['settings']['brand_name'] = 'POKER CLOCK';
+        $dirty = true;
+    }
 
     foreach ($state['tournaments'] as $id => &$t) {
         if (($t['status'] ?? 'paused') === 'running') {

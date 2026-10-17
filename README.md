@@ -1,6 +1,6 @@
-# ♠ POKER DOMAIN 德州撲克賽事計時器系統 (PHP NAS 版)
+# ♠ POKER CLOCK 德州撲克賽事計時器系統 (PHP NAS 版)
 
-本專案結合了 **POKER DOMAIN 專業賽事電視看板（單場三欄流金黑/電光藍 & 雙場同螢幕分割）** 與 **FreePokerClock.com 簡約三圓環計時器**，採用純 PHP + JSON 檔案儲存架構，**免安裝資料庫（無須設定 MySQL / MariaDB）**，可直接部署於 Synology / QNAP 等各式 NAS。
+本專案結合了 **POKER CLOCK 專業賽事電視看板（單場三欄流金黑/電光藍 & 雙場同螢幕分割）** 與 **FreePokerClock.com 簡約三圓環計時器**，採用純 PHP + JSON 檔案儲存架構，**免安裝資料庫（無須設定 MySQL / MariaDB）**，可直接部署於 Synology / QNAP 等各式 NAS。
 
 ---
 

@@ -70,7 +70,7 @@
         const now = Math.floor(Date.now() / 1000);
         return {
             settings: {
-                brand_name: 'POKER DOMAIN',
+                brand_name: 'POKER CLOCK',
                 brand_logo_icon: '♠',
                 fire_effect: true,
                 dual_left_id: 'tourney_1',
@@ -234,6 +234,11 @@
 
         const now = Math.floor(Date.now() / 1000);
         let dirty = false;
+
+        if (state.settings && state.settings.brand_name === 'POKER DOMAIN') {
+            state.settings.brand_name = 'POKER CLOCK';
+            dirty = true;
+        }
 
         Object.values(state.tournaments).forEach(t => {
             if (t.status === 'running') {
